@@ -23,10 +23,11 @@ docker run --interactive \
 	   --rm \
 	   --name vm.kops \
 	   --env KOPS_STATE_STORE=s3://kops.kubernetes.cluster.state \
+	   --env KOPS_CLUSTER_NAME=k8s-cluster.lab.dublin \
 	   --env AWS_DEFAULT_REGION=eu-west-1 \
 	   --env AWS_ACCESS_KEY_ID=asdfasdfasdfadf \
 	   --env AWS_SECRET_ACCESS_KEY=asdfasfdasdfadfasdfadsf \
-	   img.kops create cluster --zones=eu-west-1a lab.devopswiki.co.uk
+	   img.kops
 ```
 
 export KOPS_STATE_STORE=s3://clusters.dev.example.com

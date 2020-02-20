@@ -9,11 +9,7 @@ USER root
 
 RUN apt-get update && \
     apt-get --assume-yes install -qq -o=Dpkg::Use-Pty=0 \
-      curl            \
-      build-essential \
-      libssl-dev \
-      libffi-dev \
-      python-dev \
+      curl        \
       python3-pip \
       wget
 
@@ -21,13 +17,15 @@ RUN apt-get update && \
 # ---> install the AWS command line interface
 # --->
 
-RUN pip3 --version && pip3 install awscli --upgrade pip
+RUN pip3 --version && pip3 install awscli --upgrade pip && aws --version
 
-# -------------> RUN apt-get update && \
-# ------------->     apt-get --assume-yes install -qq -o=Dpkg::Use-Pty=0 wget && \
-# ------------->     adduser --home /var/opt/checker --shell /bin/bash --gecos 'Link Checking User' checker && \
-# ------------->     install -d -m 755 -o checker -g checker /var/opt/checker && \
-# ------------->     usermod -a -G sudo checker
+
+# --->
+# ---> Set /root/kops as the location for entrypoint execution.
+# --->
+
+RUN mkdir -p /root/kops
+WORKDIR /root/kops
 
 
 # --->
@@ -41,24 +39,25 @@ RUN curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s http
     kops version
 
 
-# -------------> COPY linkcheckerrc /var/opt/checker/.linkchecker/linkcheckerrc
-# -------------> COPY linkchecker_9.4.0-2_amd64.deb /tmp
-# -------------> RUN apt install --assume-yes /tmp/linkchecker_9.4.0-2_amd64.deb
+# --->
+# ---> Copy in the kubernetes administration public key and
+# ---> the AWS kubernetes cluster install script.
+# --->
+
+COPY kops-k8s-install.sh .
+RUN chmod u+x kops-k8s-install.sh
+COPY k8s-admin-key.pub /tmp
 
 
 # --->
-# ---> Now switch to the lesser permissioned checker user as
-# ---> it does not like to run with unnecessary privileges.
+# ---> The docker run will invokes this install script.
 # --->
 
-# -------------> USER checker
-# -------------> WORKDIR /var/opt/checker
+ENTRYPOINT [ "/root/kops/kops-k8s-install.sh" ]
 
 
-# --->
-# ---> Checking begins when docker run passes the source site url
-# ---> in LINK_CHECKER_SITE_URL as an --env variable.
-# --->
+
+
 
 # -------------> ENTRYPOINT linkchecker \
 # -------------> --ignore-url=.yaml$ \
@@ -70,4 +69,4 @@ RUN curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s http
 # -------------> --ignore-url=^https://medium.com \
 # -------------> "$LINK_CHECKER_URL"
 
-ENTRYPOINT ["kops"]
+# -------------> ENTRYPOINT ["kops"]
