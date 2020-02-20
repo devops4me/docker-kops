@@ -40,22 +40,31 @@ RUN curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s http
 
 
 # --->
+# ---> install kubernetes kubectl client to communicate with the cluster
+# --->
+
+RUN curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && \
+    chmod +x ./kubectl && \
+    mv ./kubectl /usr/local/bin/kubectl
+
+
+# --->
 # ---> Copy in the kubernetes administration public key and
 # ---> the AWS kubernetes cluster install script.
 # --->
 
 COPY kops-k8s-install.sh .
 RUN chmod u+x kops-k8s-install.sh
-COPY k8s-admin-key.pub /tmp
+RUN mkdir -p /root/.ssh
+COPY k8s-admin-key.pub /root/.ssh/id_rsa.pub
 
 
 # --->
 # ---> The docker run will invokes this install script.
 # --->
 
-ENTRYPOINT [ "/root/kops/kops-k8s-install.sh" ]
-
-
+## ENTRYPOINT [ "/root/kops/kops-k8s-install.sh" ]
+ENTRYPOINT [ "kops" ]
 
 
 
@@ -68,5 +77,3 @@ ENTRYPOINT [ "/root/kops/kops-k8s-install.sh" ]
 # -------------> --ignore-url=/[0-9a-f]{40}$ \
 # -------------> --ignore-url=^https://medium.com \
 # -------------> "$LINK_CHECKER_URL"
-
-# -------------> ENTRYPOINT ["kops"]

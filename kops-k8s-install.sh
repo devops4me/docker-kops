@@ -10,22 +10,23 @@
 # ++ +++ +++++++ # ++++++++ +++++++ # ++++++ +++++++++ # ++++++++++ # ++++++ +++++++ ++ #
 
 
+# --> kops delete cluster \
+# -->        --state "s3://kops.kubernetes.cluster.state" \
+# -->        --name lab.dublin.k8s.local \
+# -->        --yes
+# --> exit 0;
+
 echo "" ; echo "" ;
 echo "### ########################################################## ###"
 echo "### Create the SSH administration public key as a kops secret. ###"
 echo "### ########################################################## ###"
 echo ""
 
-kops create secret sshpublickey admin.key -i /tmp/k8s-admin-key.pub
+## kops create secret sshpublickey admin.key -i /tmp/k8s-admin-key.pub \
+##     --name k8s-cluster.lab.dublin \
+##     --state s3://kops.kubernetes.cluster.state
 
-
-echo ""
-echo "### ########################################### ###"
-echo "### List the contents of the current directory. ###"
-echo "### ########################################### ###"
-echo ""
-
-ls -lah; echo "";
+####### ------> kops create secret --name lab.devopswiki.co.uk sshpublickey admin -i /tmp/k8s-admin-key.pub
 
 
 echo "" ; echo "" ;
@@ -35,7 +36,18 @@ echo "### ######################################################## ###"
 echo ""
 
 kops create cluster \
-    --zones=eu-west-1a,eu-west-1b \
-    --node-count=2
+       --state "s3://kops.kubernetes.cluster.state" \
+       --zones "eu-west-1a,eu-west-1b" \
+       --master-count 3 \
+       --master-size=t2.micro \
+       --node-count 2 \
+       --node-size=t2.micro \
+       --name lab.dublin.k8s.local \
+       --yes
+
+#### ---> kops create cluster \
+#### --->     --zones=eu-west-1a,eu-west-1b \
+#### --->     --node-count=2 \
+#### --->     --name lab.devopswiki.co.uk
 
 exit 0

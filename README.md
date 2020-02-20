@@ -17,17 +17,37 @@ This docker machine provisions a Kubernetes cluster within AWS with just one com
 
 ```
 dig NS devopswiki.co.uk
+safe login <<book.name>>
+safe open kubernetes lab.dublin
 docker build -t img.kops .
+docker build --no-cache -t img.kops .
 docker run --interactive \
            --tty \
 	   --rm \
 	   --name vm.kops \
 	   --env KOPS_STATE_STORE=s3://kops.kubernetes.cluster.state \
-	   --env KOPS_CLUSTER_NAME=k8s-cluster.lab.dublin \
-	   --env AWS_DEFAULT_REGION=eu-west-1 \
-	   --env AWS_ACCESS_KEY_ID=asdfasdfasdfadf \
-	   --env AWS_SECRET_ACCESS_KEY=asdfasfdasdfadfasdfadsf \
+	   --env KOPS_CLUSTER_NAME=lab.dublin.k8s.local \
+	   --env NAME=lab.dublin.k8s.local \
+	   --env AWS_DEFAULT_REGION=`safe print region.key` \
+	   --env AWS_ACCESS_KEY_ID=`safe print @access.key` \
+	   --env AWS_SECRET_ACCESS_KEY=`safe print @secret.key` \
 	   img.kops
 ```
 
-export KOPS_STATE_STORE=s3://clusters.dev.example.com
+## How to Delete the Kubernetes Cluster
+
+```
+safe open kubernetes lab.dublin
+docker build --no-cache -t img.kops .
+docker run --interactive \
+           --tty \
+	   --rm \
+	   --name vm.kops \
+	   --env KOPS_STATE_STORE=s3://kops.kubernetes.cluster.state \
+	   --env KOPS_CLUSTER_NAME=lab.dublin.k8s.local \
+	   --env NAME=lab.dublin.k8s.local \
+	   --env AWS_DEFAULT_REGION=`safe print region.key` \
+	   --env AWS_ACCESS_KEY_ID=`safe print @access.key` \
+	   --env AWS_SECRET_ACCESS_KEY=`safe print @secret.key` \
+	   img.kops delete cluster --yes
+```
