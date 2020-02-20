@@ -1,2 +1,5 @@
-# docker-kops
-With kops, kubectl and aws cli pre-installed in this docker container you can create an entire production grade kubernetes cluster with one command.
+
+# Kops | kubectl | AWS Cli
+
+This docker machine provisions a Kubernetes cluster within AWS with just one command because it arrives ready with kops, klubectl, the AWS Cli and tech for creating certificates for secure intra-cluster comms.
+
