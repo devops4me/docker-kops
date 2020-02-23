@@ -37,7 +37,7 @@ echo ""
 
 kops create cluster \
        --state "s3://kops.kubernetes.cluster.state" \
-       --zones "eu-west-1a,eu-west-1b" \
+       --zones "eu-west-1a,eu-west-1b,eu-west-1c" \
        --master-count 3 \
        --master-size=t2.micro \
        --node-count 2 \
